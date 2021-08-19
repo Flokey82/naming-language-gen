@@ -1,4 +1,4 @@
-package main
+package naming
 
 import (
 	"fmt"
@@ -28,13 +28,8 @@ type Language struct {
 	Words generatedWords
 }
 
-func (lang *Language) generateCommon() {
-	lang.Words.Genitive = lang.getMorpheme("C?VC?", "of")
-	lang.Words.Definite = lang.getMorpheme("C?VC?", "the")
-}
-
-func BasicLanguage() Language {
-	lang := Language{
+func BasicLanguage() (lang *Language) {
+	lang = &Language{
 		ApplyOrtho: false,
 		ApplyMorph: false,
 
@@ -54,30 +49,28 @@ func BasicLanguage() Language {
 		Morphemes: map[string][]string{},
 
 		Words: generatedWords{
-			Genitive: "",
-			Definite: "",
-			General:  map[string][]string{},
-			Names:    []string{},
+			General: map[string][]string{},
+			Names:   []string{},
 		},
 	}
 
 	lang.generateCommon()
 
-	return lang
+	return
 }
 
-func OrthoLanguage() Language {
-	lang := BasicLanguage()
+func OrthoLanguage() (lang *Language) {
+	lang = BasicLanguage()
 
 	lang.ApplyOrtho = true
 
 	lang.generateCommon()
 
-	return lang
+	return
 }
 
-func RandomLanguage(ortho bool, morph bool) Language {
-	lang := BasicLanguage()
+func RandomLanguage(ortho bool, morph bool) (lang *Language) {
+	lang = BasicLanguage()
 
 	lang.Phonemes["C"] = consonantSets.random()
 	lang.Phonemes["V"] = vowelSets.random()
@@ -95,10 +88,11 @@ func RandomLanguage(ortho bool, morph bool) Language {
 	lang.SyllableRestrictions = restrictionSets.random()
 
 	lang.generateCommon()
-	return lang
+
+	return
 }
 
-func (lang *Language) Describe() {
+func (lang Language) Describe() {
 	fmt.Printf("-> apply ortho: %v\n", lang.ApplyOrtho)
 	fmt.Printf("-> apply morph: %v\n", lang.ApplyMorph)
 
@@ -130,4 +124,9 @@ func (lang *Language) Describe() {
 			fmt.Printf("      %v\n", strings.Join(v[:], ", "))
 		}
 	}
+}
+
+func (lang *Language) generateCommon() {
+	lang.Words.Genitive = lang.makeMorpheme("C?VC?", "of")
+	lang.Words.Definite = lang.makeMorpheme("C?VC?", "the")
 }

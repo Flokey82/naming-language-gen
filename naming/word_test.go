@@ -1,4 +1,4 @@
-package main
+package naming
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ var wordTests = []struct {
 	group      string
 	structures structureList
 }{
-	{"group1", defaultSyllableStructures},
+	{"group1", DefaultSyllableStructures},
 	{"group2", structureList{"S?CVC?"}},
 	{"group3", structureList{"CVV?C", "CL?VF"}},
 }
@@ -28,7 +28,7 @@ func TestMakeWord(t *testing.T) {
 	for _, val := range wordTests {
 		list := []string{}
 
-		p := wordParams{
+		p := &WordParams{
 			minSyllables,
 			maxSyllables,
 			val.structures,
@@ -54,14 +54,14 @@ func TestGetWord(t *testing.T) {
 	const maxSyllables = 2
 
 	for _, val := range wordTests {
-		p := wordParams{
+		p := &WordParams{
 			minSyllables,
 			maxSyllables,
 			val.structures,
 		}
 
 		for i := 0; i < 20; i++ {
-			lang.getWord(p, val.group)
+			lang.GetWord(p, val.group)
 		}
 
 		list := strings.Join(lang.Words.General[val.group][:], ", ")
@@ -77,14 +77,14 @@ func TestRandomLang(t *testing.T) {
 	const maxSyllables = 4
 
 	for _, val := range wordTests {
-		p := wordParams{
+		p := &WordParams{
 			minSyllables,
 			maxSyllables,
 			val.structures,
 		}
 
 		for i := 0; i < 20; i++ {
-			lang.getWord(p, val.group)
+			lang.GetWord(p, val.group)
 		}
 
 		list := strings.Join(lang.Words.General[val.group][:], ", ")

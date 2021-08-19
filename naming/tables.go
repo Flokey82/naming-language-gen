@@ -1,6 +1,9 @@
-package main
+package naming
+
+import "reflect"
 
 type orthoMapping map[string]string
+type orthoSet map[string]orthoMapping
 
 var defaultOrtho = orthoMapping{
 	"ʃ": "sh",
@@ -19,19 +22,10 @@ var defaultOrtho = orthoMapping{
 	"U": "ú",
 }
 
-type orthoSet map[string]orthoMapping
-
-func (o *orthoSet) random() orthoMapping {
-	i := randomRange(1, len(*o))
-
-	for _, val := range *o {
-		i--
-		if i == 0 {
-			return val
-		}
-	}
-
-	return orthoMapping{}
+func (o orthoSet) random() orthoMapping {
+	keys := reflect.ValueOf(o).MapKeys()
+	key := randKey(keys)
+	return o[key]
 }
 
 var vowelOrthSets = orthoSet{
@@ -104,17 +98,10 @@ var consonantOrthSets = orthoSet{
 
 type consonantSet map[string]string
 
-func (c *consonantSet) random() string {
-	i := randomRange(1, len(*c))
-
-	for _, val := range *c {
-		i--
-		if i == 0 {
-			return val
-		}
-	}
-
-	return ""
+func (c consonantSet) random() string {
+	keys := reflect.ValueOf(c).MapKeys()
+	key := randKey(keys)
+	return c[key]
 }
 
 var consonantSets = consonantSet{
@@ -130,17 +117,10 @@ var consonantSets = consonantSet{
 
 type vowelSet map[string]string
 
-func (v *vowelSet) random() string {
-	i := randomRange(1, len(*v))
-
-	for _, val := range *v {
-		i--
-		if i == 0 {
-			return val
-		}
-	}
-
-	return ""
+func (v vowelSet) random() string {
+	keys := reflect.ValueOf(v).MapKeys()
+	key := randKey(keys)
+	return v[key]
 }
 
 var vowelSets = vowelSet{
@@ -155,17 +135,10 @@ var vowelSets = vowelSet{
 
 type phonemeSet map[string]string
 
-func (p *phonemeSet) random() string {
-	i := randomRange(1, len(*p))
-
-	for _, val := range *p {
-		i--
-		if i == 0 {
-			return val
-		}
-	}
-
-	return ""
+func (p phonemeSet) random() string {
+	keys := reflect.ValueOf(p).MapKeys()
+	key := randKey(keys)
+	return p[key]
 }
 
 var phonemeSSets = phonemeSet{
@@ -189,7 +162,7 @@ var phonemeLSets = phonemeSet{
 	"r l w j": "rlwj",
 }
 
-var defaultSyllableStructures = structureList{
+var DefaultSyllableStructures = structureList{
 	"CVC",
 	"CVV?C",
 	"CVVC?", "CVC?", "CV", "VC", "CVF", "C?VC", "CVF?",
@@ -200,17 +173,10 @@ var defaultSyllableStructures = structureList{
 
 type restrictionSet map[string][]string
 
-func (r *restrictionSet) random() []string {
-	i := randomRange(1, len(*r))
-
-	for _, val := range *r {
-		i--
-		if i == 0 {
-			return val
-		}
-	}
-
-	return []string{}
+func (r restrictionSet) random() []string {
+	keys := reflect.ValueOf(r).MapKeys()
+	key := randKey(keys)
+	return r[key]
 }
 
 var restrictionSets = restrictionSet{
@@ -218,4 +184,11 @@ var restrictionSets = restrictionSet{
 	// "Double sounds": []string{"/(.)\\1/"},  // backreferences do not work with this regexp lib
 	"Hard clusters": []string{"[sʃf][sʃ]", "[rl][rl]"},
 	// "Doubles and hard clusters": []string{"[sʃf][sʃ]", "/(.)\\1/", "[rl][rl]"}, // backreferences do not work with this regexp lib
+}
+
+// randKey assume we're dealing with string keys...
+func randKey(keyList []reflect.Value) string {
+	i := RandomRange(0, len(keyList)-1)
+
+	return keyList[i].String()
 }

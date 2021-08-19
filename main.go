@@ -6,6 +6,8 @@ import (
 	"math/rand"
 	"strings"
 	"time"
+
+	"github.com/asmaloney/naming-language-gen/naming"
 )
 
 func main() {
@@ -22,38 +24,41 @@ func main() {
 
 	rand.Seed(time.Now().UTC().UnixNano())
 
-	lang := RandomLanguage(true, true)
+	lang := naming.RandomLanguage(true, true)
 
 	// generate some words based on our new awesome language
-	p := wordParams{
-		1,
-		randomRange(1, 5),
-		defaultSyllableStructures,
+	p := &naming.WordParams{
+		MinSyllables: 1,
+		MaxSyllables: naming.RandomRange(1, 5),
+		Structure:    naming.DefaultSyllableStructures,
 	}
 
 	group := "words"
 
 	for i := 0; i < 25; i++ {
-		lang.getWord(p, group)
+		lang.GetWord(p, group)
 	}
 
 	wordList := strings.Join(lang.Words.General[group][:], ", ")
 	fmt.Printf("[%v]: %v\n", group, wordList)
 
 	// generate some names
-	p = wordParams{
-		2,
-		randomRange(2, 7),
-		defaultSyllableStructures,
+	p = &naming.WordParams{
+		MinSyllables: 2,
+		MaxSyllables: naming.RandomRange(2, 7),
+		Structure:    naming.DefaultSyllableStructures,
 	}
 
-	const joiners = "  -"
-
-	minLength := randomRange(3, 5)
-	maxLength := randomRange(6, 20)
+	params := naming.NameParams{
+		MinLength:  naming.RandomRange(3, 5),
+		MaxLength:  naming.RandomRange(6, 20),
+		WordParams: p,
+		Joiners:    "  -",
+		Group:      "words",
+	}
 
 	for i := 0; i < 20; i++ {
-		lang.makeName(minLength, maxLength, p, joiners, "words")
+		lang.MakeName(&params)
 	}
 
 	nameList := strings.Join(lang.Words.Names[:], ", ")

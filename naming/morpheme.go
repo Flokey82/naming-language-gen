@@ -1,8 +1,10 @@
-package main
+package naming
 
-import "math/rand"
+import (
+	"math/rand"
+)
 
-func (lang *Language) getMorpheme(structure string, group string) string {
+func (lang *Language) makeMorpheme(structure string, group string) string {
 	if !lang.ApplyMorph {
 		return lang.makeSyllable(structure)
 	}
@@ -30,15 +32,9 @@ func (lang *Language) getMorpheme(structure string, group string) string {
 		exists := false
 
 		for _, v := range lang.Morphemes {
-			for _, item := range v {
-				if item == morph {
-					exists = true
-					break
-				}
-
-				if exists {
-					break
-				}
+			if contains(v, morph) {
+				exists = true
+				break
 			}
 		}
 

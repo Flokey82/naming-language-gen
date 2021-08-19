@@ -1,11 +1,11 @@
-package main
+package naming
 
 import (
 	"math/rand"
 	"regexp"
 )
 
-func (lang *Language) spell(syllable string) string {
+func (lang Language) spell(syllable string) string {
 	if !lang.ApplyOrtho {
 		return syllable
 	}
@@ -28,7 +28,7 @@ func (lang *Language) spell(syllable string) string {
 	return string(s)
 }
 
-func (lang *Language) makeSyllable(structure string) string {
+func (lang Language) makeSyllable(structure string) string {
 	for {
 		syllable := ""
 		structureLen := len(structure)
@@ -43,7 +43,7 @@ func (lang *Language) makeSyllable(structure string) string {
 				}
 			}
 
-			syllable += randomRuneFromString(lang.Phonemes[ptype])
+			syllable += RandomRuneFromString(lang.Phonemes[ptype])
 		}
 
 		bad := false

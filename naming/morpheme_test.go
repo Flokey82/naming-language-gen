@@ -1,4 +1,4 @@
-package main
+package naming
 
 import (
 	"fmt"
@@ -16,7 +16,7 @@ func TestGetMorphemeWithMorph(t *testing.T) {
 		list := []string{}
 
 		for i := 0; i < 20; i++ {
-			list = append(list, lang.getMorpheme("CVC", group))
+			list = append(list, lang.makeMorpheme("CVC", group))
 		}
 
 		fmt.Printf("Random morpheme [%v]: %v\n", group, list)

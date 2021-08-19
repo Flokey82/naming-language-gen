@@ -1,4 +1,4 @@
-package main
+package naming
 
 import (
 	"fmt"
@@ -16,7 +16,7 @@ var nameTests = []struct {
 	{"lang 2", structureList{"S?CVC?"}, "Ümlauts", "German"},
 	{"lang 3", structureList{"CVV?C", "C?VL?C"}, "Welsh", "Chinese"},
 	{"lang 4", structureList{"CL?VF"}, "Doubles", "French"},
-	{"lang 5", defaultSyllableStructures, "Welsh", "German"},
+	{"lang 5", DefaultSyllableStructures, "Welsh", "German"},
 }
 
 func TestNames(t *testing.T) {
@@ -39,14 +39,22 @@ func TestNames(t *testing.T) {
 
 		lang.generateCommon()
 
-		p := wordParams{
+		p := &WordParams{
 			minSyllables,
 			maxSyllables,
 			val.structures,
 		}
 
+		params := NameParams{
+			MinLength:  minLength,
+			MaxLength:  maxLength,
+			WordParams: p,
+			Joiners:    joiners,
+			Group:      val.group,
+		}
+
 		for i := 0; i < 10; i++ {
-			list = append(list, lang.makeName(minLength, maxLength, p, joiners, val.group))
+			list = append(list, lang.MakeName(&params))
 		}
 
 		fmt.Printf("Make names [%v]: %v\n", val.group, strings.Join(list[:], ", "))
