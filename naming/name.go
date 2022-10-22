@@ -56,7 +56,6 @@ func (lang *Language) MakeName(params *NameParams) (name string) {
 
 			if joinersLen > 0 {
 				join := RandomRuneFromString(params.Joiners)
-
 				if rand.Float32() > 0.5 {
 					name = strings.Join([]string{w1, w2}, join)
 				} else {
@@ -77,7 +76,7 @@ func (lang *Language) MakeName(params *NameParams) (name string) {
 			continue
 		}
 
-		used := false
+		var used bool
 		for _, name2 := range lang.Words.Names {
 			if strings.Contains(name, name2) || strings.Contains(name2, name) {
 				used = true

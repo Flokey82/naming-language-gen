@@ -13,26 +13,20 @@ type generatedWords struct {
 }
 
 type Language struct {
-	ApplyOrtho bool
-	ApplyMorph bool
-
-	Phonemes map[string]string
-
+	ApplyOrtho           bool
+	ApplyMorph           bool
+	Phonemes             map[string]string
+	Morphemes            map[string][]string
 	SyllableRestrictions []string
-
-	ConsOrtho  orthoMapping
-	VowelOrtho orthoMapping
-
-	Morphemes map[string][]string
-
-	Words generatedWords
+	ConsOrtho            orthoMapping
+	VowelOrtho           orthoMapping
+	Words                generatedWords
 }
 
 func BasicLanguage() (lang *Language) {
 	lang = &Language{
 		ApplyOrtho: false,
 		ApplyMorph: false,
-
 		Phonemes: orthoMapping{
 			"C": "ptkmnls",
 			"V": "aeiou",
@@ -40,32 +34,23 @@ func BasicLanguage() (lang *Language) {
 			"F": "mn",
 			"L": "rl",
 		},
-
 		SyllableRestrictions: []string{},
-
-		ConsOrtho:  orthoMapping{},
-		VowelOrtho: orthoMapping{},
-
-		Morphemes: map[string][]string{},
-
+		ConsOrtho:            orthoMapping{},
+		VowelOrtho:           orthoMapping{},
+		Morphemes:            map[string][]string{},
 		Words: generatedWords{
 			General: map[string][]string{},
 			Names:   []string{},
 		},
 	}
-
 	lang.generateCommon()
-
 	return
 }
 
 func OrthoLanguage() (lang *Language) {
 	lang = BasicLanguage()
-
 	lang.ApplyOrtho = true
-
 	lang.generateCommon()
-
 	return
 }
 
@@ -77,18 +62,13 @@ func RandomLanguage(ortho bool, morph bool) (lang *Language) {
 	lang.Phonemes["S"] = phonemeSSets.random()
 	lang.Phonemes["F"] = phonemeFSets.random()
 	lang.Phonemes["L"] = phonemeLSets.random()
-
 	lang.ApplyOrtho = ortho
 	lang.ApplyMorph = morph
-
 	lang.ConsOrtho = consonantOrthSets.random()
 	lang.VowelOrtho = vowelOrthSets.random()
-
 	lang.Morphemes = map[string][]string{}
 	lang.SyllableRestrictions = restrictionSets.random()
-
 	lang.generateCommon()
-
 	return
 }
 

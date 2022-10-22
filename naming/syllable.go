@@ -1,8 +1,8 @@
 package naming
 
 import (
+	"github.com/dlclark/regexp2"
 	"math/rand"
-	"regexp"
 )
 
 func (lang Language) spell(syllable string) string {
@@ -11,7 +11,6 @@ func (lang Language) spell(syllable string) string {
 	}
 
 	var s []rune
-
 	for _, c := range syllable {
 		str := string(c)
 		if val, ok := lang.ConsOrtho[str]; ok {
@@ -46,12 +45,10 @@ func (lang Language) makeSyllable(structure string) string {
 			syllable += RandomRuneFromString(lang.Phonemes[ptype])
 		}
 
-		bad := false
-
+		var bad bool
 		for _, restriction := range lang.SyllableRestrictions {
-			exp := regexp.MustCompile(restriction)
-
-			matched := exp.MatchString(syllable)
+			exp := regexp2.MustCompile(restriction, 0)
+			matched, _ := exp.MatchString(syllable)
 			if matched {
 				bad = true
 				break

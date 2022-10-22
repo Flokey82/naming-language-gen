@@ -42,9 +42,7 @@ var defaultOrtho = orthoMapping{
 }
 
 func (o orthoSet) random() orthoMapping {
-	keys := sortedKeys(o)
-	key := randKey(keys)
-	return o[key]
+	return o[randKey(sortedKeys(o))]
 }
 
 var vowelOrthSets = orthoSet{
@@ -118,9 +116,7 @@ var consonantOrthSets = orthoSet{
 type consonantSet map[string]string
 
 func (c consonantSet) random() string {
-	keys := sortedKeys(c)
-	key := randKey(keys)
-	return c[key]
+	return c[randKey(sortedKeys(c))]
 }
 
 var consonantSets = consonantSet{
@@ -137,9 +133,7 @@ var consonantSets = consonantSet{
 type vowelSet map[string]string
 
 func (v vowelSet) random() string {
-	keys := sortedKeys(v)
-	key := randKey(keys)
-	return v[key]
+	return v[randKey(sortedKeys(v))]
 }
 
 var vowelSets = vowelSet{
@@ -155,9 +149,7 @@ var vowelSets = vowelSet{
 type phonemeSet map[string]string
 
 func (p phonemeSet) random() string {
-	keys := sortedKeys(p)
-	key := randKey(keys)
-	return p[key]
+	return p[randKey(sortedKeys(p))]
 }
 
 var phonemeSSets = phonemeSet{
@@ -193,14 +185,12 @@ var DefaultSyllableStructures = structureList{
 type restrictionSet map[string][]string
 
 func (r restrictionSet) random() []string {
-	keys := sortedKeys(r)
-	key := randKey(keys)
-	return r[key]
+	return r[randKey(sortedKeys(r))]
 }
 
 var restrictionSets = restrictionSet{
-	"None": []string{},
-	// "Double sounds": []string{"/(.)\\1/"},  // backreferences do not work with this regexp lib
-	"Hard clusters": []string{"[sʃf][sʃ]", "[rl][rl]"},
-	// "Doubles and hard clusters": []string{"[sʃf][sʃ]", "/(.)\\1/", "[rl][rl]"}, // backreferences do not work with this regexp lib
+	"None":                      []string{},
+	"Double sounds":             []string{"/(.)\\1/"}, // backreferences do not work with this regexp lib
+	"Hard clusters":             []string{"[sʃf][sʃ]", "[rl][rl]"},
+	"Doubles and hard clusters": []string{"[sʃf][sʃ]", "/(.)\\1/", "[rl][rl]"}, // backreferences do not work with this regexp lib
 }
