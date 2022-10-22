@@ -1,6 +1,25 @@
 package naming
 
-import "reflect"
+import (
+	"sort"
+)
+
+// sortedKeys returns the sorted keys of a map that uses string keys.
+func sortedKeys[V any](m map[string]V) []string {
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	return keys
+}
+
+// randKey returns a random key from the list of keys.
+func randKey(keyList []string) string {
+	i := RandomRange(0, len(keyList)-1)
+
+	return keyList[i]
+}
 
 type orthoMapping map[string]string
 type orthoSet map[string]orthoMapping
@@ -23,7 +42,7 @@ var defaultOrtho = orthoMapping{
 }
 
 func (o orthoSet) random() orthoMapping {
-	keys := reflect.ValueOf(o).MapKeys()
+	keys := sortedKeys(o)
 	key := randKey(keys)
 	return o[key]
 }
@@ -99,7 +118,7 @@ var consonantOrthSets = orthoSet{
 type consonantSet map[string]string
 
 func (c consonantSet) random() string {
-	keys := reflect.ValueOf(c).MapKeys()
+	keys := sortedKeys(c)
 	key := randKey(keys)
 	return c[key]
 }
@@ -118,7 +137,7 @@ var consonantSets = consonantSet{
 type vowelSet map[string]string
 
 func (v vowelSet) random() string {
-	keys := reflect.ValueOf(v).MapKeys()
+	keys := sortedKeys(v)
 	key := randKey(keys)
 	return v[key]
 }
@@ -136,7 +155,7 @@ var vowelSets = vowelSet{
 type phonemeSet map[string]string
 
 func (p phonemeSet) random() string {
-	keys := reflect.ValueOf(p).MapKeys()
+	keys := sortedKeys(p)
 	key := randKey(keys)
 	return p[key]
 }
@@ -174,7 +193,7 @@ var DefaultSyllableStructures = structureList{
 type restrictionSet map[string][]string
 
 func (r restrictionSet) random() []string {
-	keys := reflect.ValueOf(r).MapKeys()
+	keys := sortedKeys(r)
 	key := randKey(keys)
 	return r[key]
 }
@@ -184,11 +203,4 @@ var restrictionSets = restrictionSet{
 	// "Double sounds": []string{"/(.)\\1/"},  // backreferences do not work with this regexp lib
 	"Hard clusters": []string{"[sʃf][sʃ]", "[rl][rl]"},
 	// "Doubles and hard clusters": []string{"[sʃf][sʃ]", "/(.)\\1/", "[rl][rl]"}, // backreferences do not work with this regexp lib
-}
-
-// randKey assume we're dealing with string keys...
-func randKey(keyList []reflect.Value) string {
-	i := RandomRange(0, len(keyList)-1)
-
-	return keyList[i].String()
 }
