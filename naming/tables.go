@@ -16,9 +16,7 @@ func sortedKeys[V any](m map[string]V) []string {
 
 // randKey returns a random key from the list of keys.
 func randKey(keyList []string) string {
-	i := RandomRange(0, len(keyList)-1)
-
-	return keyList[i]
+	return keyList[RandomRange(0, len(keyList)-1)]
 }
 
 type orthoMapping map[string]string

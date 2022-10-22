@@ -39,9 +39,9 @@ func (lang *Language) GetWord(p *WordParams, group string) (word string) {
 
 	// Extras defines the chance of a word being a new
 	// word, rather than a word from the existing list.
-	extras := 3
+	extras := 4
 	if len(group) > 0 {
-		extras = 2
+		extras = 3
 	}
 
 	for {
@@ -75,7 +75,6 @@ func (lang *Language) GetWord(p *WordParams, group string) (word string) {
 		// Since it is a new word, just add it to the list for the
 		// current group.
 		lang.Words.General[group] = append(words, word)
-
 		return word
 	}
 }

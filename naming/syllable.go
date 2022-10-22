@@ -34,17 +34,16 @@ func (lang Language) makeSyllable(structure string) string {
 
 		for i := 0; i < structureLen; i++ {
 			ptype := string(structure[i])
-
 			if (i < structureLen-1) && structure[i+1] == '?' {
 				i++
 				if rand.Float32() < 0.5 {
 					continue
 				}
 			}
-
 			syllable += RandomRuneFromString(lang.Phonemes[ptype])
 		}
 
+		// Check if the syllable satisfies our criteria.
 		var bad bool
 		for _, restriction := range lang.SyllableRestrictions {
 			exp := regexp2.MustCompile(restriction, 0)
@@ -55,6 +54,7 @@ func (lang Language) makeSyllable(structure string) string {
 			}
 		}
 
+		// Didn't work out, try again.
 		if bad {
 			continue
 		}

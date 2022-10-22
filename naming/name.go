@@ -1,6 +1,7 @@
 package naming
 
 import (
+	"math"
 	"math/rand"
 	"strings"
 )
@@ -37,16 +38,19 @@ func (lang *Language) MakeName(params *NameParams) (name string) {
 	joinersLen := len(params.Joiners)
 
 	for {
-		if rand.Float32() < 0.5 {
+		// NOTE: In the original JavaScript version we use Math.random(),
+		// which returns from 0.0 to 1.0.
+		// In Go, rand.Float32() returns a value from -1.0 to +1.0
+		if randFloat32Abs() < 0.5 {
 			name = strings.Title(lang.GetWord(params.WordParams, params.Group))
 		} else {
 			g := ""
-			if rand.Float32() < 0.6 {
+			if randFloat32Abs() < 0.6 {
 				g = params.Group
 			}
 			w1 := strings.Title(lang.GetWord(params.WordParams, g))
 			g = ""
-			if rand.Float32() < 0.6 {
+			if randFloat32Abs() < 0.6 {
 				g = params.Group
 			}
 			w2 := strings.Title(lang.GetWord(params.WordParams, g))
@@ -56,7 +60,7 @@ func (lang *Language) MakeName(params *NameParams) (name string) {
 
 			if joinersLen > 0 {
 				join := RandomRuneFromString(params.Joiners)
-				if rand.Float32() > 0.5 {
+				if randFloat32Abs() > 0.5 {
 					name = strings.Join([]string{w1, w2}, join)
 				} else {
 					name = strings.Join([]string{w1, lang.Words.Genitive, w2}, join)
@@ -66,8 +70,7 @@ func (lang *Language) MakeName(params *NameParams) (name string) {
 
 		if joinersLen > 0 {
 			join := RandomRuneFromString(params.Joiners)
-
-			if rand.Float32() < 0.1 {
+			if randFloat32Abs() < 0.1 {
 				name = strings.Join([]string{lang.Words.Definite, name}, join)
 			}
 		}
@@ -92,4 +95,8 @@ func (lang *Language) MakeName(params *NameParams) (name string) {
 
 		return name
 	}
+}
+
+func randFloat32Abs() float32 {
+	return float32(math.Abs(float64(rand.Float32())))
 }

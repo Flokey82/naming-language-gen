@@ -19,7 +19,6 @@ func TestSpellOrtho(t *testing.T) {
 
 	for _, tt := range orthoSpellTests {
 		s := lang.spell(tt.in)
-
 		if s != tt.out {
 			t.Errorf("[TestSpellOrtho] Does not match: [%v] -> [%v] => expecting [%v]", tt.in, s, tt.out)
 		}
@@ -44,7 +43,6 @@ func TestSpellVowelOrtho(t *testing.T) {
 		lang.ConsOrtho = vowelOrthSets[tt.name]
 
 		s := lang.spell(tt.in)
-
 		if s != tt.out {
 			t.Errorf("[TestSpellVowelOrtho] Does not match: [%v] -> [%v] => expecting [%v]", tt.in, s, tt.out)
 		}
@@ -70,7 +68,6 @@ func TestSpellConsonantOrtho(t *testing.T) {
 		lang.ConsOrtho = consonantOrthSets[tt.name]
 
 		s := lang.spell(tt.in)
-
 		if s != tt.out {
 			t.Errorf("[TestSpellConsonantOrtho] Does not match: [%v] -> [%v] => expecting [%v]", tt.in, s, tt.out)
 		}
@@ -81,6 +78,5 @@ func TestMakeSyllable(t *testing.T) {
 	lang := OrthoLanguage()
 
 	syllable := lang.makeSyllable("CVC")
-
 	fmt.Printf("Random syllable: %v\n", syllable)
 }
