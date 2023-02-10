@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/asmaloney/naming-language-gen/naming"
+	"github.com/Flokey82/naming-language-gen/naming"
 )
 
 func main() {
