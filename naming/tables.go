@@ -1,46 +1,23 @@
 package naming
 
-import (
-	"sort"
-)
-
-// sortedKeys returns the sorted keys of a map that uses string keys.
-func sortedKeys[V any](m map[string]V) []string {
-	keys := make([]string, 0, len(m))
-	for k := range m {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
-	return keys
-}
-
-// randKey returns a random key from the list of keys.
-func randKey(keyList []string) string {
-	return keyList[RandomRange(0, len(keyList)-1)]
-}
-
 type orthoMapping map[string]string
 type orthoSet map[string]orthoMapping
 
 var defaultOrtho = orthoMapping{
-	"ʃ": "sh",
-	"ʒ": "zh",
-	"ʧ": "ch",
-	"ʤ": "j",
-	"ŋ": "ng",
-	"j": "y",
-	"x": "kh",
-	"ɣ": "gh",
-	"ʔ": "‘",
+	"ʃ": "sh", // the 'sh' sound
+	"ʒ": "zh", // the 's' from 'pleasure', or a French 'j'
+	"ʧ": "ch", // the 'ch' sound, as in 'chair'
+	"ʤ": "j",  // the 'j' from 'judge'
+	"ŋ": "ng", // the 'ng' sound from the end of 'hang'
+	"j": "y",  // the 'y' from 'year'
+	"x": "kh", // a 'kh' sound, like in German 'Bach' or Scottish 'loch'
+	"ɣ": "gh", // a 'gh' sound, like /x/ but with the vocal chords vibrating - Spanish 'amigo'
+	"ʔ": "‘",  // glottal stop - the sound in the middle of 'uh-oh'
 	"A": "á",
 	"E": "é",
 	"I": "í",
 	"O": "ó",
 	"U": "ú",
-}
-
-func (o orthoSet) random() orthoMapping {
-	return o[randKey(sortedKeys(o))]
 }
 
 var vowelOrthSets = orthoSet{
@@ -113,10 +90,6 @@ var consonantOrthSets = orthoSet{
 
 type consonantSet map[string]string
 
-func (c consonantSet) random() string {
-	return c[randKey(sortedKeys(c))]
-}
-
 var consonantSets = consonantSet{
 	"Minimal":              "ptkmnls",
 	"English-ish":          "ptkbdgmnlrsʃzʒʧ",
@@ -130,10 +103,6 @@ var consonantSets = consonantSet{
 
 type vowelSet map[string]string
 
-func (v vowelSet) random() string {
-	return v[randKey(sortedKeys(v))]
-}
-
 var vowelSets = vowelSet{
 	"Standard 5-vowel":  "aeiou",
 	"3-vowel a i u":     "aiu",
@@ -145,10 +114,6 @@ var vowelSets = vowelSet{
 }
 
 type phonemeSet map[string]string
-
-func (p phonemeSet) random() string {
-	return p[randKey(sortedKeys(p))]
-}
 
 var phonemeSSets = phonemeSet{
 	"Just s": "s",
@@ -181,10 +146,6 @@ var DefaultSyllableStructures = structureList{
 }
 
 type restrictionSet map[string][]string
-
-func (r restrictionSet) random() []string {
-	return r[randKey(sortedKeys(r))]
-}
 
 var restrictionSets = restrictionSet{
 	"None":                      []string{},

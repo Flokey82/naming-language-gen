@@ -2,6 +2,7 @@ package naming
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 )
 
@@ -23,8 +24,8 @@ type Language struct {
 	Words                generatedWords
 }
 
-func BasicLanguage() (lang *Language) {
-	lang = &Language{
+func BasicLanguage() *Language {
+	lang := &Language{
 		ApplyOrtho: false,
 		ApplyMorph: false,
 		Phonemes: orthoMapping{
@@ -44,30 +45,30 @@ func BasicLanguage() (lang *Language) {
 		},
 	}
 	lang.generateCommon()
-	return
+	return lang
 }
 
-func OrthoLanguage() (lang *Language) {
-	lang = BasicLanguage()
+func OrthoLanguage() *Language {
+	lang := BasicLanguage()
 	lang.ApplyOrtho = true
 	lang.generateCommon()
-	return
+	return lang
 }
 
 func RandomLanguage(ortho bool, morph bool) (lang *Language) {
 	lang = BasicLanguage()
 
-	lang.Phonemes["C"] = consonantSets.random()
-	lang.Phonemes["V"] = vowelSets.random()
-	lang.Phonemes["S"] = phonemeSSets.random()
-	lang.Phonemes["F"] = phonemeFSets.random()
-	lang.Phonemes["L"] = phonemeLSets.random()
+	lang.Phonemes["C"] = randomItem(consonantSets)
+	lang.Phonemes["V"] = randomItem(vowelSets)
+	lang.Phonemes["S"] = randomItem(phonemeSSets)
+	lang.Phonemes["F"] = randomItem(phonemeFSets)
+	lang.Phonemes["L"] = randomItem(phonemeLSets)
 	lang.ApplyOrtho = ortho
 	lang.ApplyMorph = morph
-	lang.ConsOrtho = consonantOrthSets.random()
-	lang.VowelOrtho = vowelOrthSets.random()
+	lang.ConsOrtho = randomItem(consonantOrthSets)
+	lang.VowelOrtho = randomItem(vowelOrthSets)
 	lang.Morphemes = map[string][]string{}
-	lang.SyllableRestrictions = restrictionSets.random()
+	lang.SyllableRestrictions = randomItem(restrictionSets)
 	lang.generateCommon()
 	return
 }
@@ -109,4 +110,22 @@ func (lang Language) Describe() {
 func (lang *Language) generateCommon() {
 	lang.Words.Genitive = lang.makeMorpheme("C?VC?", "of")
 	lang.Words.Definite = lang.makeMorpheme("C?VC?", "the")
+}
+
+// randomItem returns a random item from a map that uses string keys.
+func randomItem[V any](m map[string]V) V {
+	keys := sortedKeys[V](m)
+	i := RandomRange(0, len(keys)-1)
+	key := keys[i]
+	return m[key]
+}
+
+// sortedKeys returns the sorted keys of a map that uses string keys.
+func sortedKeys[V any](m map[string]V) []string {
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	return keys
 }
