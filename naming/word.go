@@ -4,9 +4,9 @@ import "math/rand"
 
 type structureList []string
 
-func (list *structureList) random() string {
+func (list *structureList) random(rnd *rand.Rand) string {
 	l := len(*list)
-	i := rand.Intn(l)
+	i := rnd.Intn(l)
 	return (*list)[i]
 }
 
@@ -16,15 +16,26 @@ type WordParams struct {
 	Structure    structureList
 }
 
+// Clone returns a deep copy of the WordParams.
+func (p *WordParams) Clone() *WordParams {
+	clone := &WordParams{
+		MinSyllables: p.MinSyllables,
+		MaxSyllables: p.MaxSyllables,
+		Structure:    make(structureList, len(p.Structure)),
+	}
+	copy(clone.Structure, p.Structure)
+	return clone
+}
+
 // makeWord generates a new random word based on the given parameters.
 func (lang Language) makeWord(p *WordParams, group string) (word string) {
-	numSyllables := RandomRange(p.MinSyllables, p.MaxSyllables+1)
+	numSyllables := RandomRange(p.MinSyllables, p.MaxSyllables+1, lang.Rnd)
 
 	keys := make([]string, numSyllables)
-	keys[RandomRange(0, numSyllables)] = group
+	keys[RandomRange(0, numSyllables, lang.Rnd)] = group
 
 	for i := 0; i < numSyllables; i++ {
-		word += lang.makeMorpheme(p.Structure.random(), keys[i])
+		word += lang.makeMorpheme(p.Structure.random(lang.Rnd), keys[i])
 	}
 	return
 }
@@ -47,7 +58,7 @@ func (lang *Language) GetWord(p *WordParams, group string) (word string) {
 	for {
 		// If random range returns a number larger than
 		// the length of the current word list.
-		n := RandomRange(0, len(words)+extras)
+		n := RandomRange(0, len(words)+extras, lang.Rnd)
 		if n < len(words) {
 			return words[n] // Return a word from the list.
 		}

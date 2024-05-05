@@ -16,7 +16,7 @@ var wordTests = []struct {
 }
 
 func TestMakeWord(t *testing.T) {
-	lang := OrthoLanguage()
+	lang := OrthoLanguage(0)
 
 	lang.ApplyMorph = true
 	lang.Phonemes["S"] = phonemeSSets["s ʃ f"]
@@ -26,14 +26,13 @@ func TestMakeWord(t *testing.T) {
 	const maxSyllables = 1
 
 	for _, val := range wordTests {
-		list := []string{}
-
 		p := &WordParams{
 			minSyllables,
 			maxSyllables,
 			val.structures,
 		}
 
+		var list []string
 		for i := 0; i < 20; i++ {
 			list = append(list, lang.makeWord(p, val.group))
 		}
@@ -43,7 +42,7 @@ func TestMakeWord(t *testing.T) {
 }
 
 func TestGetWord(t *testing.T) {
-	lang := OrthoLanguage()
+	lang := OrthoLanguage(0)
 
 	lang.ApplyMorph = true
 	lang.Phonemes["C"] = consonantSets["English-ish"]
@@ -71,7 +70,7 @@ func TestGetWord(t *testing.T) {
 }
 
 func TestRandomLang(t *testing.T) {
-	lang := RandomLanguage(false, true)
+	lang := RandomLanguage(false, true, 0)
 
 	const minSyllables = 1
 	const maxSyllables = 4

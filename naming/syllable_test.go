@@ -15,7 +15,7 @@ var orthoSpellTests = []struct {
 }
 
 func TestSpellOrtho(t *testing.T) {
-	lang := OrthoLanguage()
+	lang := OrthoLanguage(0)
 
 	for _, tt := range orthoSpellTests {
 		s := lang.spell(tt.in)
@@ -37,7 +37,7 @@ var vowelOrthoSpellTests = []struct {
 }
 
 func TestSpellVowelOrtho(t *testing.T) {
-	lang := OrthoLanguage()
+	lang := OrthoLanguage(0)
 
 	for _, tt := range vowelOrthoSpellTests {
 		lang.ConsOrtho = vowelOrthSets[tt.name]
@@ -62,7 +62,7 @@ var consonantOrthoSpellTests = []struct {
 }
 
 func TestSpellConsonantOrtho(t *testing.T) {
-	lang := OrthoLanguage()
+	lang := OrthoLanguage(0)
 
 	for _, tt := range consonantOrthoSpellTests {
 		lang.ConsOrtho = consonantOrthSets[tt.name]
@@ -75,7 +75,7 @@ func TestSpellConsonantOrtho(t *testing.T) {
 }
 
 func TestMakeSyllable(t *testing.T) {
-	lang := OrthoLanguage()
+	lang := OrthoLanguage(0)
 
 	syllable := lang.makeSyllable("CVC")
 	fmt.Printf("Random syllable: %v\n", syllable)

@@ -2,7 +2,6 @@ package naming
 
 import (
 	"github.com/dlclark/regexp2"
-	"math/rand"
 )
 
 func (lang Language) spell(syllable string) string {
@@ -29,18 +28,18 @@ func (lang Language) spell(syllable string) string {
 
 func (lang Language) makeSyllable(structure string) string {
 	for {
-		syllable := ""
+		var syllable string
 		structureLen := len(structure)
 
 		for i := 0; i < structureLen; i++ {
 			ptype := string(structure[i])
 			if (i < structureLen-1) && structure[i+1] == '?' {
 				i++
-				if rand.Float32() < 0.5 {
+				if lang.Rnd.Float32() < 0.5 {
 					continue
 				}
 			}
-			syllable += RandomRuneFromString(lang.Phonemes[ptype])
+			syllable += RandomRuneFromString(lang.Phonemes[ptype], lang.Rnd)
 		}
 
 		// Check if the syllable satisfies our criteria.

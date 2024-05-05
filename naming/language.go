@@ -2,7 +2,7 @@ package naming
 
 import (
 	"fmt"
-	"sort"
+	"math/rand"
 	"strings"
 )
 
@@ -13,7 +13,25 @@ type generatedWords struct {
 	Names    []string
 }
 
+// Clone returns a deep copy of the generatedWords.
+func (gw generatedWords) Clone() generatedWords {
+	clone := generatedWords{
+		Genitive: gw.Genitive,
+		Definite: gw.Definite,
+		General:  make(map[string][]string),
+		Names:    make([]string, len(gw.Names)),
+	}
+	for k, v := range gw.General {
+		clone.General[k] = make([]string, len(v))
+		copy(clone.General[k], v)
+	}
+	copy(clone.Names, gw.Names)
+	return clone
+}
+
 type Language struct {
+	Seed                 int64
+	Rnd                  *rand.Rand
 	ApplyOrtho           bool
 	ApplyMorph           bool
 	Phonemes             map[string]string
@@ -24,8 +42,39 @@ type Language struct {
 	Words                generatedWords
 }
 
-func BasicLanguage() *Language {
+// Fork returns a deep copy of the language.
+func (lang *Language) Fork(newSeed int64) *Language {
+	clone := &Language{
+		Seed:                 newSeed,
+		Rnd:                  rand.New(rand.NewSource(newSeed)),
+		ApplyOrtho:           lang.ApplyOrtho,
+		ApplyMorph:           lang.ApplyMorph,
+		Phonemes:             make(map[string]string),
+		Morphemes:            make(map[string][]string),
+		SyllableRestrictions: make([]string, len(lang.SyllableRestrictions)),
+		ConsOrtho:            lang.ConsOrtho,
+		VowelOrtho:           lang.VowelOrtho,
+		Words:                lang.Words.Clone(),
+	}
+
+	copy(clone.SyllableRestrictions, lang.SyllableRestrictions)
+
+	for k, v := range lang.Phonemes {
+		clone.Phonemes[k] = v
+	}
+
+	for k, v := range lang.Morphemes {
+		clone.Morphemes[k] = make([]string, len(v))
+		copy(clone.Morphemes[k], v)
+	}
+
+	return clone
+}
+
+func BasicLanguage(seed int64) *Language {
 	lang := &Language{
+		Seed:       seed,
+		Rnd:        rand.New(rand.NewSource(seed)),
 		ApplyOrtho: false,
 		ApplyMorph: false,
 		Phonemes: orthoMapping{
@@ -35,40 +84,39 @@ func BasicLanguage() *Language {
 			"F": "mn",
 			"L": "rl",
 		},
-		SyllableRestrictions: []string{},
-		ConsOrtho:            orthoMapping{},
-		VowelOrtho:           orthoMapping{},
-		Morphemes:            map[string][]string{},
+		SyllableRestrictions: nil,
+		ConsOrtho:            make(orthoMapping),
+		VowelOrtho:           make(orthoMapping),
+		Morphemes:            make(map[string][]string),
 		Words: generatedWords{
-			General: map[string][]string{},
-			Names:   []string{},
+			General: make(map[string][]string),
+			Names:   nil,
 		},
 	}
 	lang.generateCommon()
 	return lang
 }
 
-func OrthoLanguage() *Language {
-	lang := BasicLanguage()
+func OrthoLanguage(seed int64) *Language {
+	lang := BasicLanguage(seed)
 	lang.ApplyOrtho = true
 	lang.generateCommon()
 	return lang
 }
 
-func RandomLanguage(ortho bool, morph bool) (lang *Language) {
-	lang = BasicLanguage()
-
-	lang.Phonemes["C"] = randomItem(consonantSets)
-	lang.Phonemes["V"] = randomItem(vowelSets)
-	lang.Phonemes["S"] = randomItem(phonemeSSets)
-	lang.Phonemes["F"] = randomItem(phonemeFSets)
-	lang.Phonemes["L"] = randomItem(phonemeLSets)
+func RandomLanguage(ortho, morph bool, seed int64) (lang *Language) {
+	lang = BasicLanguage(seed)
+	lang.Phonemes["C"] = randomItem(consonantSets, lang.Rnd)
+	lang.Phonemes["V"] = randomItem(vowelSets, lang.Rnd)
+	lang.Phonemes["S"] = randomItem(phonemeSSets, lang.Rnd)
+	lang.Phonemes["F"] = randomItem(phonemeFSets, lang.Rnd)
+	lang.Phonemes["L"] = randomItem(phonemeLSets, lang.Rnd)
 	lang.ApplyOrtho = ortho
 	lang.ApplyMorph = morph
-	lang.ConsOrtho = randomItem(consonantOrthSets)
-	lang.VowelOrtho = randomItem(vowelOrthSets)
-	lang.Morphemes = map[string][]string{}
-	lang.SyllableRestrictions = randomItem(restrictionSets)
+	lang.ConsOrtho = randomItem(consonantOrthSets, lang.Rnd)
+	lang.VowelOrtho = randomItem(vowelOrthSets, lang.Rnd)
+	lang.Morphemes = make(map[string][]string)
+	lang.SyllableRestrictions = randomItem(restrictionSets, lang.Rnd)
 	lang.generateCommon()
 	return
 }
@@ -110,22 +158,4 @@ func (lang Language) Describe() {
 func (lang *Language) generateCommon() {
 	lang.Words.Genitive = lang.makeMorpheme("C?VC?", "of")
 	lang.Words.Definite = lang.makeMorpheme("C?VC?", "the")
-}
-
-// randomItem returns a random item from a map that uses string keys.
-func randomItem[V any](m map[string]V) V {
-	keys := sortedKeys[V](m)
-	i := RandomRange(0, len(keys)-1)
-	key := keys[i]
-	return m[key]
-}
-
-// sortedKeys returns the sorted keys of a map that uses string keys.
-func sortedKeys[V any](m map[string]V) []string {
-	keys := make([]string, 0, len(m))
-	for k := range m {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
-	return keys
 }

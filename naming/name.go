@@ -1,8 +1,6 @@
 package naming
 
 import (
-	"math"
-	"math/rand"
 	"strings"
 )
 
@@ -12,6 +10,17 @@ type NameParams struct {
 	WordParams *WordParams
 	Joiners    string
 	Group      string
+}
+
+// Clone returns a deep copy of the NameParams.
+func (p *NameParams) Clone() *NameParams {
+	return &NameParams{
+		MinLength:  p.MinLength,
+		MaxLength:  p.MaxLength,
+		WordParams: p.WordParams.Clone(),
+		Joiners:    p.Joiners,
+		Group:      p.Group,
+	}
 }
 
 func (lang *Language) MakeName(params *NameParams) (name string) {
@@ -41,36 +50,36 @@ func (lang *Language) MakeName(params *NameParams) (name string) {
 		// NOTE: In the original JavaScript version we use Math.random(),
 		// which returns from 0.0 to 1.0. In Go, rand.Float64() returns a
 		// value from -1.0 to +1.0.
-		if randFloat64Abs() < 0.5 {
+		if randFloat64Abs(lang.Rnd) < 0.5 {
 			name = strings.Title(lang.GetWord(params.WordParams, params.Group))
 		} else {
-			g := ""
-			if randFloat64Abs() < 0.6 {
-				g = params.Group
+			var group string
+			if randFloat64Abs(lang.Rnd) < 0.6 {
+				group = params.Group
 			}
-			w1 := strings.Title(lang.GetWord(params.WordParams, g))
-			g = ""
-			if randFloat64Abs() < 0.6 {
-				g = params.Group
+			word1 := strings.Title(lang.GetWord(params.WordParams, group))
+			group = ""
+			if randFloat64Abs(lang.Rnd) < 0.6 {
+				group = params.Group
 			}
-			w2 := strings.Title(lang.GetWord(params.WordParams, g))
-			if w1 == w2 {
+			word2 := strings.Title(lang.GetWord(params.WordParams, group))
+			if word1 == word2 {
 				continue
 			}
 
 			if joinersLen > 0 {
-				join := RandomRuneFromString(params.Joiners)
-				if randFloat64Abs() > 0.5 {
-					name = strings.Join([]string{w1, w2}, join)
+				join := RandomRuneFromString(params.Joiners, lang.Rnd)
+				if randFloat64Abs(lang.Rnd) > 0.5 {
+					name = strings.Join([]string{word1, word2}, join)
 				} else {
-					name = strings.Join([]string{w1, lang.Words.Genitive, w2}, join)
+					name = strings.Join([]string{word1, lang.Words.Genitive, word2}, join)
 				}
 			}
 		}
 
 		if joinersLen > 0 {
-			join := RandomRuneFromString(params.Joiners)
-			if randFloat64Abs() < 0.1 {
+			join := RandomRuneFromString(params.Joiners, lang.Rnd)
+			if randFloat64Abs(lang.Rnd) < 0.1 {
 				name = strings.Join([]string{lang.Words.Definite, name}, join)
 			}
 		}
@@ -94,8 +103,4 @@ func (lang *Language) MakeName(params *NameParams) (name string) {
 		lang.Words.Names = append(lang.Words.Names, name)
 		return name
 	}
-}
-
-func randFloat64Abs() float64 {
-	return math.Abs(rand.NormFloat64())
 }

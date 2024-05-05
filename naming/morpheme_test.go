@@ -6,7 +6,7 @@ import (
 )
 
 func TestGetMorphemeWithMorph(t *testing.T) {
-	lang := OrthoLanguage()
+	lang := OrthoLanguage(0)
 
 	lang.ApplyMorph = true
 

@@ -1,17 +1,12 @@
 package naming
 
-import (
-	"math/rand"
-)
-
 func (lang *Language) makeMorpheme(structure string, group string) string {
 	if !lang.ApplyMorph {
 		return lang.makeSyllable(structure)
 	}
 
-	list := []string{}
-
 	// Get the morpheme list for the given group.
+	var list []string
 	if val, ok := lang.Morphemes[group]; ok {
 		list = val
 	}
@@ -26,21 +21,19 @@ func (lang *Language) makeMorpheme(structure string, group string) string {
 	for {
 		// If random range returns a number larger than
 		// the length of the current morpheme list.
-		n := rand.Intn(len(list) + extras)
+		n := lang.Rnd.Intn(len(list) + extras)
 		if n < len(list) {
 			return list[n] // Return a morpheme from the list.
 		}
 
 		morph := lang.makeSyllable(structure)
-		exists := false
 
 		// Check if the generated morpheme is already present
 		// in any group. We iterate in stable order over
 		// the group keys.
-		keys := sortedKeys(lang.Morphemes)
-		for _, k := range keys {
-			v := lang.Morphemes[k]
-			if contains(v, morph) {
+		var exists bool
+		for _, k := range sortedKeys(lang.Morphemes) {
+			if contains(lang.Morphemes[k], morph) {
 				exists = true
 				break
 			}
